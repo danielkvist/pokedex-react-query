@@ -4,15 +4,14 @@ import Pokedex from './pokedex';
 
 const App: FC = () => {
 	return (
-		<div className="App">
-			<header>
-				<h1>Pokedex Query</h1>
+		<>
+			<header className="header">
+				<h1 className="title">Pokedex Query</h1>
 			</header>
-			<main>
+			<main className="main">
 				<Pokedex />
 			</main>
-			<footer></footer>
-		</div>
+		</>
 	);
 };
 
