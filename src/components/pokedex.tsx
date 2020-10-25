@@ -1,14 +1,14 @@
-import React, { FC } from 'react';
+import React, { FC, Fragment, useRef } from 'react';
 import { useInfiniteQuery } from 'react-query';
 
 import { fetchPkmns } from './api';
+import useIntersectionObserver from '../hooks/use-intersection-observer';
 import Pokemon from './pokemon';
+import Loading from './loading';
 
 const Pokedex: FC = () => {
 	const {
 		data,
-		isLoading,
-		isFetching,
 		status,
 		fetchMore,
 		canFetchMore,
@@ -17,28 +17,31 @@ const Pokedex: FC = () => {
 		getFetchMore: (last) => last.next,
 		staleTime: Infinity,
 	});
+	const loadMore = useRef(null);
 
-	if (isLoading || isFetching) return <p>Loading</p>;
-	if (status === 'error') return <p>Error fetching data</p>;
+	useIntersectionObserver({
+		target: loadMore,
+		onIntersect: fetchMore,
+		enabled: canFetchMore,
+	});
 
-	return (
+	return status === 'loading' ? (
+		<p>Loading</p>
+	) : status === 'error' ? (
+		<p>Error</p>
+	) : (
 		<>
 			{data &&
-				data.map((group) => {
-					return group.results.map((pkmn: { name: string; url: string }) => (
-						<Pokemon key={pkmn.name} url={pkmn.url} />
-					));
-				})}
-			<button
-				onClick={() => fetchMore()}
-				disabled={!canFetchMore || !!isFetchingMore}
-			>
-				{isFetchingMore
-					? 'Loading more'
-					: canFetchMore
-					? 'Load More'
-					: 'Nothing more to load'}
-			</button>
+				data.map((group, i) => (
+					<Fragment key={i}>
+						{group.results.map((pkmn: { name: string; url: string }) => (
+							<Pokemon key={pkmn.name} url={pkmn.url} />
+						))}
+					</Fragment>
+				))}
+			<div className="fetching" ref={loadMore}>
+				{isFetchingMore ? <p>Loading</p> : null}
+			</div>
 		</>
 	);
 };
