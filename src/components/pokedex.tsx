@@ -1,40 +1,44 @@
-import React, { FC, useState, useEffect } from 'react';
-import { usePaginatedQuery } from 'react-query';
+import React, { FC } from 'react';
+import { useInfiniteQuery } from 'react-query';
 
+import { fetchPkmns } from './api';
 import Pokemon from './pokemon';
 
-const fetchPkmns = async (_: string, offset: number) => {
-	const res = await fetch(
-		`https://pokeapi.co/api/v2/pokemon?offset=${offset * 12}&limit=12`
-	);
-	return res.json();
-};
-
 const Pokedex: FC = () => {
-	const [offset] = useState<number>(0);
-	const [data, setData] = useState<{ name: string; url: string }[]>([]);
-	const { resolvedData, isLoading, isError, isFetching } = usePaginatedQuery(
-		['pokemons', offset],
-		fetchPkmns,
-		{
-			staleTime: Infinity,
-		}
-	);
-
-	useEffect(() => {
-		if (isFetching) return;
-		setData((old) => [...old, ...resolvedData.results]);
-	}, [setData, isFetching, resolvedData]);
+	const {
+		data,
+		isLoading,
+		isFetching,
+		status,
+		fetchMore,
+		canFetchMore,
+		isFetchingMore,
+	} = useInfiniteQuery('pokemons', fetchPkmns, {
+		getFetchMore: (last) => last.next,
+		staleTime: Infinity,
+	});
 
 	if (isLoading || isFetching) return <p>Loading</p>;
-	if (isError) return <p>Error fetching data</p>;
+	if (status === 'error') return <p>Error fetching data</p>;
 
 	return (
 		<>
-			{data.length &&
-				data.map((pkmn) => {
-					return <Pokemon key={pkmn.name} url={pkmn.url} />;
+			{data &&
+				data.map((group) => {
+					return group.results.map((pkmn: { name: string; url: string }) => (
+						<Pokemon key={pkmn.name} url={pkmn.url} />
+					));
 				})}
+			<button
+				onClick={() => fetchMore()}
+				disabled={!canFetchMore || !!isFetchingMore}
+			>
+				{isFetchingMore
+					? 'Loading more'
+					: canFetchMore
+					? 'Load More'
+					: 'Nothing more to load'}
+			</button>
 		</>
 	);
 };

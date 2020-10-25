@@ -1,10 +1,7 @@
 import React, { FC } from 'react';
 import { useQuery } from 'react-query';
 
-const fetchPokemonStats = async (_: string, url: string) => {
-	const res = await fetch(url);
-	return res.json();
-};
+import { fetchPkmnStats } from './api';
 
 interface Props {
 	url: string;
@@ -13,7 +10,7 @@ interface Props {
 const Pokemon: FC<Props> = ({ url }) => {
 	const { data, isLoading, isError } = useQuery(
 		['pokemon', url],
-		fetchPokemonStats,
+		fetchPkmnStats,
 		{
 			staleTime: Infinity,
 		}
