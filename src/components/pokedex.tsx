@@ -16,11 +16,11 @@ const Pokedex: FC = () => {
 		getFetchMore: (last) => last.next,
 		staleTime: Infinity,
 	});
-	const loadMore = useRef(null);
+	const loadMoreBtn = useRef<HTMLButtonElement>(null);
 
 	useIntersectionObserver({
-		target: loadMore,
-		onIntersect: fetchMore,
+		target: loadMoreBtn,
+		onIntersect: () => fetchMore(),
 		enabled: canFetchMore,
 	});
 
@@ -40,7 +40,7 @@ const Pokedex: FC = () => {
 				))}
 			<button
 				className="load-more"
-				ref={loadMore}
+				ref={loadMoreBtn}
 				onClick={() => fetchMore()}
 				disabled={!canFetchMore}
 			>
