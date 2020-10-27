@@ -4,7 +4,6 @@ import { useInfiniteQuery } from 'react-query';
 import { fetchPkmns } from './api';
 import useIntersectionObserver from '../hooks/use-intersection-observer';
 import Pokemon from './pokemon';
-import Loading from './loading';
 
 const Pokedex: FC = () => {
 	const {
@@ -39,9 +38,14 @@ const Pokedex: FC = () => {
 						))}
 					</Fragment>
 				))}
-			<div className="fetching" ref={loadMore}>
-				{isFetchingMore ? <p>Loading</p> : null}
-			</div>
+			<button
+				className="load-more"
+				ref={loadMore}
+				onClick={() => fetchMore()}
+				disabled={!canFetchMore}
+			>
+				{isFetchingMore ? 'Loading...' : 'Load more'}
+			</button>
 		</>
 	);
 };

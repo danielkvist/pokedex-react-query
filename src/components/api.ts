@@ -5,9 +5,9 @@ const fetchPkmns = async (_: string, cursor: string | undefined) => {
   return res.json();
 }
 
-const fetchPkmnStats = async (_: string, url: string) => {
+const fetchStats = async (_: string, url: string) => {
   const res = await fetch(url);
   return res.json();
 }
 
-export { fetchPkmns, fetchPkmnStats }
+export { fetchPkmns, fetchStats }

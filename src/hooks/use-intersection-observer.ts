@@ -30,10 +30,6 @@ const useIntersectionObserver = ({
     }
 
     observer.observe(el);
-
-    return () => {
-      observer.unobserve(el);
-    };
   }, [enabled, onIntersect, root, rootMargin, target, threshold]);
 };
 
